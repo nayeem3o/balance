@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trading Balance Receipt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112,800&family=Archivo:wght@400;600&family=IBM+Plex+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE work, money summary for non-experts: calm, exact, nothing to decode
+   IDEA a printed till receipt, each line explains itself when you point at it
+   PICTURE the receipt itself, plus one bar showing where the $761.06 went
+   COLOUR concrete ground, white paper, black ink, green in, red out, yellow marker on what is left
+   TYPE Archivo wide 800 for the headline, IBM Plex Mono on the paper
+   LAYOUT laptop: headline + money bar left, receipt right; phone: headline, receipt, bar */
+:root{color-scheme:light dark;--bg:light-dark(#d9d8d3,#141413);--ink:light-dark(#141413,#ecebe6);--soft:light-dark(#4a4a47,#b4b3ad);--paper:#fffefa;--pink:#1a1a19;--rule:#c9c7bf;--in:#1d7f45;--out:#c92f26;--mark:#ffe600}
+:root[data-theme=light]{color-scheme:light}
+:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 Archivo,system-ui,sans-serif;overflow-x:clip}
+.band{padding-block:clamp(28px,4vw,64px);padding-left:max(5vw,16px);padding-right:max(5vw,16px)}
+.wrap{max-width:1140px;margin:0 auto;display:grid;gap:clamp(24px,4vw,56px);grid-template-columns:minmax(0,1fr);grid-template-areas:"head" "receipt" "flow"}
+@media(min-width:900px){.wrap{grid-template-columns:minmax(0,1fr) 440px;grid-template-areas:"head receipt" "flow receipt";align-items:start}}
+.head{grid-area:head}
+.flow{grid-area:flow}
+.rc{grid-area:receipt}
+h1{font-family:Archivo,sans-serif;font-stretch:112%;font-weight:800;font-size:clamp(32px,5vw,50px);line-height:1.05;letter-spacing:-.02em;margin:0 0 14px;text-wrap:balance}
+h1 .big{white-space:nowrap;background:linear-gradient(transparent 58%,var(--mark) 58%,var(--mark) 92%,transparent 92%);color:var(--ink)}
+:root[data-theme=dark] h1 .big{background:none;color:var(--mark)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) h1 .big{background:none;color:var(--mark)}}
+.lead{font-size:17px;max-width:34em;margin:0;color:var(--soft)}
+.lead b{color:var(--ink)}
+.card{background:var(--paper);color:var(--pink);border-radius:4px;padding:22px 22px 18px;box-shadow:0 1px 0 rgba(0,0,0,.08)}
+.card h2{font:600 17px/1.3 Archivo,sans-serif;margin:0 0 4px}
+.card p.s{margin:0 0 16px;font-size:14px;color:#55544f}
+.bar{display:flex;height:56px;border-radius:3px;overflow:hidden;border:1.5px solid var(--pink)}
+.seg{position:relative;outline:none;cursor:help;transition:filter .15s}
+.seg:hover,.seg:focus-visible{filter:brightness(1.12)}
+.seg+.seg{border-left:1.5px solid var(--pink)}
+.legend{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:2px}
+.legend li{display:grid;grid-template-columns:16px minmax(0,1fr) auto 3.6em;gap:10px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--rule);font-size:15px}
+.legend li:last-child{border-bottom:0}
+.sw{width:16px;height:16px;border-radius:2px;border:1.5px solid var(--pink)}
+.legend .amt,.legend .pc{font-family:"IBM Plex Mono",monospace;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.legend .pc{color:#6b6a65;font-size:13px}
+.legend li.left{font-weight:600}
+.check{margin-top:16px;padding:12px 14px;background:#f2f1ec;border-radius:3px;font:14px/1.5 "IBM Plex Mono",monospace;overflow-wrap:anywhere}
+.check b{color:var(--in)}
+.receipt{position:relative;background:var(--paper);color:var(--pink);font:15px/1.45 "IBM Plex Mono",ui-monospace,monospace;padding:30px 24px 34px;filter:drop-shadow(0 10px 18px rgba(0,0,0,.18));animation:print .9s cubic-bezier(.2,.7,.2,1) both}
+.receipt::before,.receipt::after{content:"";position:absolute;left:0;right:0;height:10px;background:linear-gradient(-45deg,transparent 7px,var(--paper) 0),linear-gradient(45deg,transparent 7px,var(--paper) 0);background-size:14px 14px;background-repeat:repeat-x}
+.receipt::before{top:-9px;transform:rotate(180deg)}
+.receipt::after{bottom:-9px}
+@keyframes print{from{clip-path:inset(0 0 100% 0);transform:translateY(-14px)}to{clip-path:inset(-20px -20px -20px -20px);transform:none}}
+@media(prefers-reduced-motion:reduce){.receipt{animation:none}}
+.rh{text-align:center;border-bottom:2px dashed var(--pink);padding-bottom:14px;margin-bottom:6px}
+.rh .t{font-weight:700;font-size:18px;letter-spacing:.02em}
+.rh .m{font-size:13px;color:#55544f}
+.hint{font-size:13px;text-align:center;color:#55544f;margin:10px 0 4px}
+.sec{margin-top:16px}
+.sec h3{font:700 14px/1.3 "IBM Plex Mono",monospace;margin:0 0 4px;padding:4px 0;border-bottom:1px solid var(--pink)}
+.row{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:6px 6px;margin:0 -6px;border-radius:3px;cursor:help;outline:none}
+.row:hover,.row:focus{background:#f1efe6}
+.row:focus-visible{box-shadow:0 0 0 2px var(--pink)}
+.row .v{white-space:nowrap;font-variant-numeric:tabular-nums;text-align:right}
+.row .v.in{color:var(--in)}
+.row .v.out{color:var(--out)}
+.row.tot{border-top:1.5px dashed var(--pink);margin-top:4px;padding-top:8px;font-weight:700}
+.row.final{margin-top:20px;border:2px solid var(--pink);background:var(--mark);padding:12px 10px;margin-inline:0;font-size:17px;font-weight:700}
+.row.final:hover,.row.final:focus{background:#fff04d}
+.row.final small{display:block;font-weight:400;font-size:13px}
+.tip{position:absolute;left:6px;right:6px;top:calc(100% + 6px);z-index:5;background:var(--pink);color:#fffefa;font:14px/1.5 Archivo,sans-serif;padding:12px 14px;border-radius:4px;box-shadow:0 8px 20px rgba(0,0,0,.25);opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity .12s,transform .12s;pointer-events:none}
+.tip::before{content:"";position:absolute;top:-6px;left:18px;border:6px solid transparent;border-top:0;border-bottom-color:var(--pink)}
+.tip .after{display:block;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.25);font:13px "IBM Plex Mono",monospace;color:#e8e6dd}
+.tip .after b{color:var(--mark)}
+.row:hover .tip,.row:focus .tip,.seg:hover .tip,.seg:focus .tip{opacity:1;visibility:visible;transform:none}
+.seg .tip{left:0;right:auto;width:min(260px,70vw)}
+.foot{text-align:center;font-size:13px;color:#55544f;margin-top:22px;border-top:2px dashed var(--pink);padding-top:12px}
+@media(max-width:600px){.receipt{padding:26px 16px 30px;font-size:14px}.card{padding:18px 16px}}
+</style>
+</head>
+<body>
+<main class="band">
+  <div class="wrap">
+    <header class="head">
+      <h1>After everything, <span class="big" id="leftH">$106.82</span> is left</h1>
+      <p class="lead">You gave me <b>$400</b>. Trading turned it into <b>$761.06</b>. Below is exactly where every dollar went. <b>Point at (or tap) any line</b> to see what it means in plain words.</p>
+    </header>
+
+    <section class="flow" aria-labelledby="fh">
+      <div class="card">
+        <h2 id="fh">Where the $761.06 went</h2>
+        <p class="s">The whole bar is all the money we had. Each colour is one place it went.</p>
+        <div class="bar" id="bar"></div>
+        <ul class="legend" id="legend"></ul>
+        <div class="check" id="check"></div>
+      </div>
+    </section>
+
+    <section class="rc" aria-label="Receipt">
+      <div class="receipt">
+        <div class="rh">
+          <div class="t">BALANCE RECEIPT</div>
+          <div class="m">Trading account summary<br>Issued 24 Nov 2026 · Amounts in USD</div>
+        </div>
+        <p class="hint">Hover or tap a line for an explanation</p>
+        <div id="lines"></div>
+        <div class="foot">Every number above adds up exactly.<br>Thank you for your trust.</div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script>
+{
+const S=[
+  {h:"1. Money in",kind:"in",rows:[
+    {l:"You gave me",v:400,n:"The starting money you handed over for trading."},
+    {l:"Total profit made",v:468.42,n:"All the winning trades added together. This money was earned on top of your $400."},
+    {l:"Total loss",v:-107.36,n:"All the losing trades added together. This amount was lost, so it comes off."}],
+   t:{l:"Net balance",n:"Your $400 + profit $468.42 − loss $107.36. This is all the money we had before anything was paid out. Trading itself gained $361.06 after losses."}},
+  {h:"2. Paid out to clients",kind:"out",rows:[
+    {l:"Yasir Naveed",v:-110,n:"Money withdrawn and paid to client Yasir Naveed."},
+    {l:"Md Salu",v:-84.31,n:"Money withdrawn and paid to client Md Salu."},
+    {l:"Muhammad Abu Layak",v:-60.93,n:"Money withdrawn and paid to client Muhammad Abu Layak."}],
+   t:{l:"Total to clients",n:"All three client payouts added together: 110 + 84.31 + 60.93."}},
+  {h:"3. Sent to you",kind:"out",rows:[
+    {l:"19 Nov 2026",v:-120,n:"Money I sent directly to you on 19 November."},
+    {l:"24 Nov 2026",v:-200,n:"Money I sent directly to you on 24 November."}],
+   t:{l:"Total sent to you",n:"Both transfers to you added together: 120 + 200. You have already received this."}},
+  {h:"4. I spent",kind:"out",rows:[
+    {l:"Bought a $5K funded account",v:-39,n:"Fee paid for a $5,000 funded trading account (a challenge account that lets me trade with a larger balance)."},
+    {l:"Living expenses",v:-40,n:"Money used for my day-to-day living costs."}],
+   t:{l:"Total spent",n:"Both costs added together: 39 + 40."}}
+];
+const f=x=>(x<0?"−":"")+"$"+Math.abs(x).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,",");
+const r2=x=>Math.round(x*100)/100;
+let run=0,html="";
+const totals=[];
+S.forEach(sec=>{
+  html+=`<div class="sec"><h3>${sec.h}</h3>`;
+  let sum=0;
+  sec.rows.forEach(r=>{
+    run=r2(run+r.v);sum=r2(sum+r.v);
+    const c=r.v<0?"out":"in";
+    html+=`<div class="row" tabindex="0"><span>${r.l}</span><span class="v ${c}">${r.v>0&&sec.kind==="in"&&r!==sec.rows[0]?"+":""}${f(r.v)}</span><span class="tip" role="tooltip">${r.n}<span class="after">Running balance after this line: <b>${f(run)}</b></span></span></div>`;
+  });
+  totals.push(sum);
+  html+=`<div class="row tot" tabindex="0"><span>${sec.t.l}</span><span class="v">${f(sum)}</span><span class="tip" role="tooltip">${sec.t.n}<span class="after">Running balance now: <b>${f(run)}</b></span></span></div></div>`;
+});
+const left=run;
+html+=`<div class="row final" tabindex="0"><span>LAST BALANCE<small>Available on my Binance account</small></span><span class="v">${f(left)}</span><span class="tip" role="tooltip">What is left after everything: $761.06 − $255.24 to clients − $320 sent to you − $79 spent. This money is still there and available.</span></div>`;
+document.getElementById("lines").innerHTML=html;
+
+const net=totals[0];
+const parts=[
+  {l:"Paid to clients",v:-totals[1],c:"#c92f26",n:"Paid out to the three clients."},
+  {l:"Sent to you",v:-totals[2],c:"#2b2b2a",n:"Already transferred to you."},
+  {l:"Spent",v:-totals[3],c:"#a3a29c",n:"Funded account fee and living expenses."},
+  {l:"Still left",v:left,c:"#ffe600",n:"Available now on Binance.",k:"left"}
+];
+document.getElementById("bar").innerHTML=parts.map(p=>`<div class="seg" tabindex="0" style="flex:${p.v} 1 0;background:${p.c}" aria-label="${p.l} ${f(p.v)}"><span class="tip" role="tooltip"><b>${p.l}: ${f(p.v)}</b><br>${p.n}<span class="after">${Math.round(p.v/net*100)}% of the $761.06</span></span></div>`).join("");
+document.getElementById("legend").innerHTML=parts.map(p=>`<li class="${p.k||""}"><span class="sw" style="background:${p.c}"></span><span>${p.l}</span><span class="amt">${f(p.v)}</span><span class="pc">${Math.round(p.v/net*100)}%</span></li>`).join("");
+const ok=Math.abs(r2(net+totals[1]+totals[2]+totals[3])-left)<.005&&Math.abs(left-106.82)<.005;
+document.getElementById("check").innerHTML=`Check: ${f(net)} − ${f(-totals[1]).slice(0)} − ${f(-totals[2])} − ${f(-totals[3])} = <b>${f(left)}</b> ${ok?"✓ matches":"✗"}`;
+document.getElementById("leftH").textContent=f(left);
+}
+</script>
+</body>
+</html>
